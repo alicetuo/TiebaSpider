@@ -23,6 +23,7 @@ class HtmlParser(object):
         for link in links:
             new_url = link['href']
             new_full_url = urlparse.urljoin(page_url, new_url)
+            print new_full_url
             new_urls.append(new_full_url)
 
         for link in replay_links:
@@ -57,57 +58,57 @@ class HtmlParser(object):
                 # other_info & other_info 取时间和楼层，解析方式不同
                 other_info = soup.find_all("div", attrs={"class": re.compile("(l_post)|(j_l_post)|(l_post_bright)")})
                 other_info1 = soup.find_all('span', class_="tail-info")
-                if not res_data.has_key("game_name"):
+                if "game_name" not in res_data:
                     res_data["game_name"] = [game_name.get_text().strip()]
                 else:
                     res_data["game_name"].append(game_name.get_text().strip())
-                if not res_data.has_key("url"):
+                if "url" not in res_data:
                     res_data["url"] = [page_url]
                 else:
                     res_data["url"].append(page_url)
 
-                if not res_data.has_key("title"):
+                if "title" not in res_data:
                     res_data['title'] = [title_node.get_text().strip()]
                 else:
                     res_data["title"].append(title_node.get_text().strip())
 
                 for author in authors:
-                    if not res_data.has_key("author"):
+                    if "author" not in res_data:
                         res_data["author"] = [author.get_text().strip()]
                     else:
                         res_data["author"].append(author.get_text().strip())
 
                 for new_content in summary_content:
-                    if not res_data.has_key("content"):
+                    if "content" not in res_data:
                         res_data["content"] = [new_content.get_text().strip()]
                     else:
                         res_data["content"].append(new_content.get_text().strip())
                 for dates in other_info1:
                     if re.match(r"^[1-2][0-9][0-9][0-9]-([1][0-2]|0?[1-9])-([12][0-9]|3[01]|0?[1-9])"
                                 r" ([01][0-9]|[2][0-3]):[0-5][0-9]$", dates.get_text()):
-                        if not res_data.has_key("datetime"):
+                        if "datetime" not in res_data:
                             res_data["datetime"] = [dates.get_text().strip()]
                         else:
                             res_data["datetime"].append(dates.get_text().strip())
 
                     elif re.match(r"\d", dates.get_text()):
-                        if not res_data.has_key("floor"):
+                        if "floor" not in res_data:
                             res_data["floor"] = [dates.get_text().strip()]
                         else:
                             res_data["floor"].append(dates.get_text().strip())
 
-                for detail in other_info:
-                    text = json.loads(detail["data-field"])
-                    date_info = text["content"]
-                    if not res_data.has_key("datetime"):
-                        res_data["datetime"] = [date_info['date']]
-                    else:
-                        res_data["datetime"].append(date_info["date"])
-
-                    if not res_data.has_key("floor"):
-                        res_data["floor"] = [date_info['post_index']]
-                    else:
-                        res_data["floor"].append(date_info["post_index"])
+                # for detail in other_info:
+                #     text = json.loads(detail["data-field"])
+                #     date_info = text["content"]
+                #     if not res_data.has_key("datetime"):
+                #         res_data["datetime"] = [date_info['date']]
+                #     else:
+                #         res_data["datetime"].append(date_info["date"])
+                #
+                #     if not res_data.has_key("floor"):
+                #         res_data["floor"] = [date_info['post_index']]
+                #     else:
+                #         res_data["floor"].append(date_info["post_index"])
                 return res_data
             except Exception, e:
                 print e
